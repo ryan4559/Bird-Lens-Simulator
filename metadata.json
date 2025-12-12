@@ -1,0 +1,5 @@
+{
+  "name": "Bird Lens Simulator",
+  "description": "A tool for bird photographers to visualize focal length, sensor crop factors, and subject distance.",
+  "requestFramePermissions": []
+}
