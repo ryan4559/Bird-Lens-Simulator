@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Lens Body Background -->
+  <circle cx="50" cy="50" r="48" fill="#0f172a" stroke="#3b82f6" stroke-width="4" />
+  
+  <!-- Lens Glass Reflection/Detail -->
+  <circle cx="50" cy="50" r="38" fill="#1e293b" stroke="#64748b" stroke-width="2" />
+  
+  <!-- Lens Glare -->
+  <path d="M65 25 Q 75 35 70 45" stroke="rgba(255,255,255,0.3)" stroke-width="3" fill="none" stroke-linecap="round" />
+  
+  <!-- Bird Icon -->
+  <text x="50" y="60" font-size="50" text-anchor="middle" dominant-baseline="middle" style="filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));">🐦</text>
+</svg>
