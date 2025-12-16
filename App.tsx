@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { Camera, Ruler, Maximize, Bird, TreePalm, Crop, ZoomIn, Binoculars } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Camera, Ruler, Maximize, Bird, TreePalm, Crop, ZoomIn, Binoculars, Sun, Moon } from 'lucide-react';
 
 // 鳥類數據庫 (高度以公分為單位)
 const BIRD_TYPES = [
@@ -40,6 +40,17 @@ export default function BirdLensSimulator() {
   const [sensorKey, setSensorKey] = useState<keyof typeof SENSOR_SIZES>('ff');
   const [digitalCrop, setDigitalCrop] = useState(1); // 1x, 1.4x, 2x
   const [selectedBirdId, setSelectedBirdId] = useState('small');
+  
+  // Theme State: Default to Light Mode (false)
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
 
   const selectedBird = BIRD_TYPES.find(b => b.id === selectedBirdId) || BIRD_TYPES[0];
   const sensor = SENSOR_SIZES[sensorKey];
@@ -82,26 +93,36 @@ export default function BirdLensSimulator() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 p-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 p-4 md:p-8 font-sans transition-colors duration-300">
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* Header */}
-        <div className="flex items-center space-x-3 border-b border-slate-700 pb-4">
-          <Camera className="w-8 h-8 text-blue-400" />
-          <div>
-            <h1 className="text-2xl font-bold text-white">野鳥攝影：焦距與構圖模擬器</h1>
-            <p className="text-slate-400 text-sm">視覺化您的鏡頭選擇，避免買錯焦段</p>
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-4">
+          <div className="flex items-center space-x-3">
+            <Camera className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">野鳥攝影：焦距與構圖模擬器</h1>
+              <p className="text-slate-500 dark:text-slate-400 text-sm">視覺化您的鏡頭選擇，避免買錯焦段</p>
+            </div>
           </div>
+          
+          <button
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className="p-2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors"
+            aria-label="Toggle theme"
+          >
+            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* 左側：控制面板 */}
-          <div className="lg:col-span-4 space-y-6 bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700">
+          <div className="lg:col-span-4 space-y-6 bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 transition-colors duration-300">
             
             {/* 1. 選擇鳥類 */}
             <div className="space-y-3">
-              <label className="flex items-center text-sm font-semibold text-blue-300 uppercase tracking-wider">
+              <label className="flex items-center text-sm font-semibold text-blue-600 dark:text-blue-300 uppercase tracking-wider">
                 <Bird className="w-4 h-4 mr-2" /> 1. 拍攝目標 (大小)
               </label>
               <div className="grid grid-cols-1 gap-2">
@@ -111,8 +132,8 @@ export default function BirdLensSimulator() {
                     onClick={() => setSelectedBirdId(bird.id)}
                     className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
                       selectedBirdId === bird.id
-                        ? 'bg-blue-600/20 border-blue-500 text-white'
-                        : 'bg-slate-700 border-transparent text-slate-300 hover:bg-slate-600'
+                        ? 'bg-blue-50 border-blue-500 text-blue-800 dark:bg-blue-600/20 dark:text-white'
+                        : 'bg-slate-100 border-transparent text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600'
                     }`}
                   >
                     <div className="flex items-center space-x-3">
@@ -126,11 +147,11 @@ export default function BirdLensSimulator() {
             </div>
 
             {/* 2. 感光元件 */}
-            <div className="space-y-3 pt-4 border-t border-slate-700">
-              <label className="flex items-center text-sm font-semibold text-purple-300 uppercase tracking-wider">
+            <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+              <label className="flex items-center text-sm font-semibold text-purple-600 dark:text-purple-300 uppercase tracking-wider">
                 <Maximize className="w-4 h-4 mr-2" /> 2. 機身感光元件
               </label>
-              <div className="flex bg-slate-900 p-1 rounded-lg">
+              <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-lg">
                 {(Object.keys(SENSOR_SIZES) as Array<keyof typeof SENSOR_SIZES>).map((key) => (
                   <button
                     key={key}
@@ -138,7 +159,7 @@ export default function BirdLensSimulator() {
                     className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
                       sensorKey === key
                         ? 'bg-purple-600 text-white shadow-md'
-                        : 'text-slate-400 hover:text-white'
+                        : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                     }`}
                   >
                     {SENSOR_SIZES[key].name}
@@ -148,11 +169,11 @@ export default function BirdLensSimulator() {
             </div>
 
             {/* 3. 數位裁切 */}
-            <div className="space-y-3 pt-4 border-t border-slate-700">
-              <label className="flex items-center text-sm font-semibold text-pink-300 uppercase tracking-wider">
+            <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+              <label className="flex items-center text-sm font-semibold text-pink-600 dark:text-pink-300 uppercase tracking-wider">
                 <Crop className="w-4 h-4 mr-2" /> 3. 數位裁切 (Crop Mode)
               </label>
-              <div className="flex bg-slate-900 p-1 rounded-lg">
+              <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-lg">
                 {DIGITAL_CROPS.map((option) => (
                   <button
                     key={option.value}
@@ -160,7 +181,7 @@ export default function BirdLensSimulator() {
                     className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
                       digitalCrop === option.value
                         ? 'bg-pink-600 text-white shadow-md'
-                        : 'text-slate-400 hover:text-white'
+                        : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                     }`}
                   >
                     {option.label}
@@ -170,12 +191,12 @@ export default function BirdLensSimulator() {
             </div>
 
             {/* 4. 焦距滑桿 */}
-            <div className="space-y-3 pt-4 border-t border-slate-700">
+            <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-700">
               <div className="flex justify-between items-center">
-                <label className="flex items-center text-sm font-semibold text-green-300 uppercase tracking-wider">
+                <label className="flex items-center text-sm font-semibold text-green-600 dark:text-green-300 uppercase tracking-wider">
                   <Camera className="w-4 h-4 mr-2" /> 4. 鏡頭焦距
                 </label>
-                <span className="text-xl font-mono text-green-400 font-bold">{focalLength}mm</span>
+                <span className="text-xl font-mono text-green-600 dark:text-green-400 font-bold">{focalLength}mm</span>
               </div>
               <input
                 type="range"
@@ -184,9 +205,9 @@ export default function BirdLensSimulator() {
                 step="10"
                 value={focalLength}
                 onChange={(e) => setFocalLength(Number(e.target.value))}
-                className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-green-500 hover:accent-green-400"
+                className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-green-500 hover:accent-green-400"
               />
-              <div className="flex justify-between text-xs text-slate-500 font-mono">
+              <div className="flex justify-between text-xs text-slate-500 dark:text-slate-500 font-mono">
                 <span>70mm</span>
                 <span>400mm</span>
                 <span>800mm</span>
@@ -194,12 +215,12 @@ export default function BirdLensSimulator() {
             </div>
 
             {/* 5. 距離滑桿 */}
-            <div className="space-y-3 pt-4 border-t border-slate-700">
+            <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-700">
               <div className="flex justify-between items-center">
-                <label className="flex items-center text-sm font-semibold text-orange-300 uppercase tracking-wider">
+                <label className="flex items-center text-sm font-semibold text-orange-600 dark:text-orange-300 uppercase tracking-wider">
                   <Ruler className="w-4 h-4 mr-2" /> 5. 拍攝距離
                 </label>
-                <span className="text-xl font-mono text-orange-400 font-bold">{distance}m</span>
+                <span className="text-xl font-mono text-orange-600 dark:text-orange-400 font-bold">{distance}m</span>
               </div>
               <input
                 type="range"
@@ -208,9 +229,9 @@ export default function BirdLensSimulator() {
                 step="1"
                 value={distance}
                 onChange={(e) => setDistance(Number(e.target.value))}
-                className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-orange-500 hover:accent-orange-400"
+                className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-orange-500 hover:accent-orange-400"
               />
-              <div className="flex justify-between text-xs text-slate-500 font-mono">
+              <div className="flex justify-between text-xs text-slate-500 dark:text-slate-500 font-mono">
                 <span>5m</span>
                 <span>50m</span>
                 <span>100m</span>
@@ -223,7 +244,7 @@ export default function BirdLensSimulator() {
           <div className="lg:col-span-8 space-y-6">
             
             {/* 模擬觀景窗 */}
-            <div className="relative w-full aspect-[3/2] bg-black rounded-xl overflow-hidden shadow-2xl border-4 border-slate-800 group">
+            <div className="relative w-full aspect-[3/2] bg-black rounded-xl overflow-hidden shadow-2xl border-4 border-slate-300 dark:border-slate-800 group transition-colors duration-300">
               
               {/* 背景 */}
               <div className="absolute inset-0 bg-gradient-to-b from-teal-900 to-emerald-950 opacity-50"></div>
@@ -296,21 +317,21 @@ export default function BirdLensSimulator() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               
               {/* 卡片 1: 焦距與望遠鏡倍率 */}
-              <div className="bg-slate-800 p-4 rounded-lg border border-slate-700 relative overflow-hidden">
+              <div className="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700 relative overflow-hidden transition-colors duration-300">
                 <div className="relative z-10 space-y-4">
                   {/* 等效焦距 */}
                   <div>
-                    <div className="text-slate-400 text-xs uppercase mb-1 flex items-center">
+                    <div className="text-slate-500 dark:text-slate-400 text-xs uppercase mb-1 flex items-center">
                       <ZoomIn className="w-3 h-3 mr-1" />
                       等效視角焦距 (Full Frame Equiv.)
                     </div>
-                    <div className="text-2xl font-bold text-white flex items-baseline">
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white flex items-baseline">
                       {Math.round(stats.equivalentFocalLength)}mm
                     </div>
                     <div className="text-xs text-slate-500 mt-1 flex flex-col">
                       <span>物理焦段: {focalLength}mm</span>
                       {(sensorKey === 'apsc' || digitalCrop > 1) && (
-                        <span className="text-purple-400">
+                        <span className="text-purple-600 dark:text-purple-400">
                           (係數: {(sensor.cropFactor * digitalCrop).toFixed(1)}x)
                         </span>
                       )}
@@ -318,47 +339,47 @@ export default function BirdLensSimulator() {
                   </div>
 
                   {/* 分隔線 */}
-                  <div className="border-t border-slate-600/50"></div>
+                  <div className="border-t border-slate-200 dark:border-slate-600/50"></div>
 
-                  {/* 望遠鏡倍率 (新增功能) */}
+                  {/* 望遠鏡倍率 */}
                   <div>
-                     <div className="text-slate-400 text-xs uppercase mb-1 flex items-center">
-                      <Binoculars className="w-3 h-3 mr-1 text-indigo-400" />
+                     <div className="text-slate-500 dark:text-slate-400 text-xs uppercase mb-1 flex items-center">
+                      <Binoculars className="w-3 h-3 mr-1 text-indigo-500 dark:text-indigo-400" />
                       相當於雙筒望遠鏡倍率
                     </div>
                     <div className="flex items-baseline gap-2">
-                       <span className="text-xl font-bold text-indigo-300">
+                       <span className="text-xl font-bold text-indigo-600 dark:text-indigo-300">
                         {stats.magnification.toFixed(1)}x
                       </span>
-                      <span className="text-xs text-slate-400">
+                      <span className="text-xs text-slate-500 dark:text-slate-400">
                         (@50mm標準)
                       </span>
                     </div>
-                    <p className="text-xs text-indigo-400/80 mt-1">
+                    <p className="text-xs text-indigo-500/80 dark:text-indigo-400/80 mt-1">
                       {getMagnificationLabel(stats.magnification)}
                     </p>
                   </div>
                 </div>
                 
                 {/* 背景裝飾 */}
-                <Binoculars className="absolute right-[-10px] bottom-[-10px] w-24 h-24 text-white/5" />
+                <Binoculars className="absolute right-[-10px] bottom-[-10px] w-24 h-24 text-slate-100 dark:text-white/5 pointer-events-none" />
               </div>
 
               {/* 卡片 2: 構圖建議 */}
-              <div className="bg-slate-800 p-4 rounded-lg border border-slate-700">
-                <div className="text-slate-400 text-xs uppercase mb-1">構圖建議 (Composition)</div>
-                <div className="text-sm text-white space-y-2">
+              <div className="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700 transition-colors duration-300">
+                <div className="text-slate-500 dark:text-slate-400 text-xs uppercase mb-1">構圖建議 (Composition)</div>
+                <div className="text-sm space-y-2">
                   {stats.fillPercentage < 10 && (
-                    <p className="text-red-300 font-medium">❌ 太小了 (主體 &lt; 10%)。建議啟用數位裁切或靠近。</p>
+                    <p className="text-red-500 dark:text-red-300 font-medium">❌ 太小了 (主體 &lt; 10%)。建議啟用數位裁切或靠近。</p>
                   )}
                   {stats.fillPercentage >= 10 && stats.fillPercentage < 30 && (
-                    <p className="text-yellow-300 font-medium">⚠️ 帶景構圖 (10-30%)。適合展現環境。</p>
+                    <p className="text-yellow-600 dark:text-yellow-300 font-medium">⚠️ 帶景構圖 (10-30%)。適合展現環境。</p>
                   )}
                   {stats.fillPercentage >= 30 && stats.fillPercentage <= 80 && (
-                    <p className="text-green-400 font-medium">✅ 黃金比例 (30-80%)。細節豐富且構圖舒適。</p>
+                    <p className="text-green-600 dark:text-green-400 font-medium">✅ 黃金比例 (30-80%)。細節豐富且構圖舒適。</p>
                   )}
                   {stats.fillPercentage > 80 && (
-                    <p className="text-orange-400 font-medium">🔍 大特寫 / 爆框 (&gt;80%)。適合頭部特寫。</p>
+                    <p className="text-orange-500 dark:text-orange-400 font-medium">🔍 大特寫 / 爆框 (&gt;80%)。適合頭部特寫。</p>
                   )}
                 </div>
               </div>
