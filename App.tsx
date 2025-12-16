@@ -41,14 +41,24 @@ export default function BirdLensSimulator() {
   const [digitalCrop, setDigitalCrop] = useState(1); // 1x, 1.4x, 2x
   const [selectedBirdId, setSelectedBirdId] = useState('small');
   
-  // Theme State: Default to Light Mode (false)
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  // Theme State: Initialize from localStorage, default to DARK (true)
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('theme');
+      if (stored !== null) {
+        return stored === 'dark';
+      }
+    }
+    return true; // Default to Dark
+  });
 
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
     }
   }, [isDarkMode]);
 
@@ -246,14 +256,14 @@ export default function BirdLensSimulator() {
             {/* 模擬觀景窗 */}
             <div className="relative w-full aspect-[3/2] bg-black rounded-xl overflow-hidden shadow-2xl border-4 border-slate-300 dark:border-slate-800 group transition-colors duration-300">
               
-              {/* 背景 */}
-              <div className="absolute inset-0 bg-gradient-to-b from-teal-900 to-emerald-950 opacity-50"></div>
+              {/* 背景 (Day/Night simulation based on theme) */}
+              <div className="absolute inset-0 bg-gradient-to-b from-sky-200 to-emerald-400 dark:from-teal-900 dark:to-emerald-950 opacity-80 dark:opacity-50 transition-colors duration-500"></div>
               
               {/* 裝飾性背景樹木 */}
-              <div className="absolute bottom-0 left-10 text-emerald-800 opacity-40">
+              <div className="absolute bottom-0 left-10 text-emerald-600 dark:text-emerald-800 opacity-60 dark:opacity-40 transition-colors duration-500">
                 <TreePalm size={120} />
               </div>
-              <div className="absolute bottom-10 right-20 text-emerald-800 opacity-30 transform scale-75">
+              <div className="absolute bottom-10 right-20 text-emerald-600 dark:text-emerald-800 opacity-50 dark:opacity-30 transform scale-75 transition-colors duration-500">
                 <TreePalm size={100} />
               </div>
 
